@@ -1,11 +1,14 @@
-name=django-docker
-image=$(name)
+image=django-docker
+container=$(image)
 
 build:
 	docker build --force-rm --no-cache -t $(image) .
 
 run:
 	docker run -it --rm \
-		--name=$(name) \
+		--name=$(container) \
 		-p 8000:8000 \
-		$(image)
+		$(container)
+
+test:
+	docker exec -it $(container) /bin/bash -c "python manage.py test"
