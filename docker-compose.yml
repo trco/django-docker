@@ -1,25 +1,33 @@
 version: '3.7'
-
 services:
-  django:
-    container_name: django
-    build: .
-    command: python manage.py runserver 0.0.0.0:8000
-    volumes:
-      - .:/code
-    ports:
-      - 8000:8000
-    depends_on:
-      - db
-  db:
+  postgres:
     image: postgres:12.0-alpine
-    container_name: database
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=django_dev
+    # ports:
+    #   - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    networks:
+      - django-dev-network
+
+  django:
+    build: .
+    container_name: django
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - 8000:8000
+    depends_on:
+      - postgres
+    volumes:
+      - .:/code
+    networks:
+      - django-dev-network
+
 
 volumes:
   postgres_data:
+
+networks:
+  django-dev-network:
